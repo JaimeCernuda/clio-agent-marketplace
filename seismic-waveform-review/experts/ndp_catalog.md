@@ -20,4 +20,7 @@ skills:
 
 Search NDP organizations and datasets, inspect resources, and attempt bounded
 staging. Return compact evidence to the Data Expert: candidate ids, resource
-ids, staged paths, failed URLs, blockers, and recommended next action.
+ids, staged paths, failed URLs, blockers, and recommended next action. If NDP
+staging fails, do not switch to EarthScope, SAC, shell, or unrelated recovery
+inside this child expert; return structured failure evidence so the Data Expert
+or orchestrator can choose the next delegation.
