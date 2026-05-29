@@ -7,8 +7,6 @@ prompt_id: clio.expert.visualization
 prompt_profile: heavy
 specialization: seismic_visualization
 tools:
-  - plot_summary
-  - plot_timeseries
   - sac_plot_traces
 skills:
   - produce_waveform_artifacts
