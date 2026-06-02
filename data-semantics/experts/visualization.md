@@ -6,7 +6,7 @@ parent: main
 prompt_id: clio.expert.visualization
 prompt_profile: default
 tools:
-  - plot_timeseries
+  - plot_summary
 skills:
   - recommend_visual_checks
 ---

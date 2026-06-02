@@ -9,7 +9,9 @@ blueprint:
 experts:
   - experts/main.md
   - experts/reference.md
+  - experts/reference_quality.md
   - experts/variants.md
+  - experts/variant_impact.md
 defaults:
   prompt_profile: heavy
 ---
@@ -17,5 +19,6 @@ defaults:
 # Genomics Review Agent
 
 A domain agent for small genomics handoff reviews. It separates reference
-inspection from variant review so CLIO can test per-session agent activation
-with a hierarchy that is not the default data-exploration agent.
+inspection, reference quality, variant review, and variant impact triage so
+CLIO can test per-session agent activation with a hierarchy that is not the
+default data-exploration agent.

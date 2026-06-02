@@ -8,6 +8,8 @@ prompt_profile: heavy
 specialization: mass_spectrometry
 tools:
   - mass_spec_inspect_mzml
+children:
+  - spectra_quality
 skills:
   - inspect_mzml_spectra
   - evaluate_ms_level_balance

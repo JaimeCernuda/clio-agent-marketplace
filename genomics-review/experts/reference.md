@@ -8,6 +8,8 @@ prompt_profile: heavy
 specialization: genomics_reference
 tools:
   - genomics_inspect_fasta
+children:
+  - reference_quality
 skills:
   - inspect_reference_composition
   - identify_contig_and_gc_evidence

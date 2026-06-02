@@ -9,11 +9,13 @@ blueprint:
 experts:
   - experts/main.md
   - experts/mass_spec.md
+  - experts/spectra_quality.md
+  - experts/search_readiness.md
 defaults:
   prompt_profile: heavy
 ---
 
 # Proteomics mzML Review Agent
 
-A proteomics-domain agent for mzML inspection, MS-level balance, m/z coverage,
-TIC evidence, and acquisition metadata checks.
+A proteomics-domain agent for mzML inspection, MS-level balance, spectra quality,
+m/z coverage, TIC evidence, and peptide-search readiness checks.

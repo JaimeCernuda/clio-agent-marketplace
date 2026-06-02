@@ -7,6 +7,7 @@ prompt_id: clio.main.planner
 prompt_profile: heavy
 children:
   - crystal_structure
+  - simulation_readiness
 skills:
   - route_crystal_structure_review
 ---
