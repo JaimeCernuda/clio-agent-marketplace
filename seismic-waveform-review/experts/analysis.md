@@ -14,6 +14,16 @@ skills:
   - coordinate_waveform_statistics
 parameters:
   max_sync_delegation_rounds: 1
+  continuation_contracts:
+    - id: sac_recovery_to_visualization
+      when_output_contains:
+        - .sac
+        - Trace statistics
+      match: all
+      next_expert: visualization
+      next_action: plot_sac_traces_from_returned_sac_path
+      flags:
+        DO_NOT_FINALIZE_BEFORE_VISUALIZATION: "true"
 ---
 
 # Seismic Analysis Expert

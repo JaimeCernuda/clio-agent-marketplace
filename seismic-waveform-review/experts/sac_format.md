@@ -14,6 +14,17 @@ skills:
   - recover_fresh_sac_waveforms
   - inspect_sac_archives
   - compute_trace_statistics
+parameters:
+  continuation_contracts:
+    - id: sac_waveform_to_visualization
+      when_output_contains:
+        - .sac
+        - Trace statistics
+      match: all
+      next_expert: visualization
+      next_action: plot_sac_traces_from_returned_sac_path
+      flags:
+        DO_NOT_FINALIZE_BEFORE_VISUALIZATION: "true"
 ---
 
 # SAC Format Child Expert
