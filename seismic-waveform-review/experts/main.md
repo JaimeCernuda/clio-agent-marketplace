@@ -42,3 +42,10 @@ If any returned child result includes `NEXT_EXPERT: analysis`,
 `expert_handoffs` row must target `analysis`. Do not produce a final answer and
 do not call `data` again from that state. After Analysis returns SAC evidence,
 the next `expert_handoffs` row must target `visualization`.
+
+If any returned child result includes `NEXT_EXPERT: visualization`,
+`NEXT_ACTION: plot_sac_traces`, `DO_NOT_FINALIZE_BEFORE_VISUALIZATION: true`,
+`.sac`, or "No PNG plot artifact", the next `expert_handoffs` row must target
+`visualization` with the exact SAC path. Do not produce a final answer from
+that state. The final answer must cite an observed `FINAL_ARTIFACT:` PNG path or
+equivalent Visualization result proving `sac_plot_traces` ran.

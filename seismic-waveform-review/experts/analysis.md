@@ -32,3 +32,17 @@ do not ask Data for more catalog work. Delegate directly to `sac_format` with
 the bounded fallback. Return only tool-grounded SAC evidence: local path,
 source identifiers, trace statistics, and a clear instruction that Main should
 delegate `visualization` next with that SAC path.
+
+After `sac_format` returns a fresh local SAC path and trace statistics, end
+your response with these exact continuation contract lines, filling in the
+observed path:
+
+```text
+NEXT_EXPERT: visualization
+NEXT_ACTION: plot_sac_traces <observed local SAC path>
+DO_NOT_FINALIZE_BEFORE_VISUALIZATION: true
+```
+
+Do not produce a final answer to the user and do not ask Data for more evidence
+after SAC recovery succeeds. Main owns the next sibling handoff to
+Visualization.
