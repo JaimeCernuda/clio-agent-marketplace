@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
-"""Minimal placeholder MCP server entry point for descriptor packaging tests."""
+"""Minimal pack-local MCP server for CLIO marketplace execution tests."""
 
 from __future__ import annotations
 
 import json
 import sys
 
+from fastmcp import FastMCP
+
+
+mcp = FastMCP("calculator-smoke")
+
+
+@mcp.tool()
+def calculator_add(a: float, b: float) -> dict[str, float]:
+    """Add two numbers and return the operands plus the sum."""
+
+    return {"a": a, "b": b, "sum": a + b}
+
 
 def main() -> int:
-    # This file is intentionally tiny: marketplace preflight validates launch
-    # metadata statically, while real MCP protocol execution is tested in CLIO.
     if len(sys.argv) > 1 and sys.argv[1] == "serve":
-        sys.stderr.write("calculator smoke MCP placeholder is not enabled by default\n")
+        mcp.run(transport="stdio", show_banner=False)
         return 0
     print(json.dumps({"name": "calculator-smoke", "tools": ["calculator_add"]}))
     return 0
