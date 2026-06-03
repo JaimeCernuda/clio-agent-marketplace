@@ -13,9 +13,28 @@ children:
 skills:
   - inspect_reference_composition
   - identify_contig_and_gc_evidence
+parameters:
+  max_sync_delegation_rounds: 2
+  continuation_contracts:
+    - id: reference_to_quality_review
+      when_output_contains:
+        - GC
+        - contig
+      match: all
+      next_expert: reference_quality
+      next_action: review_reference_quality_from_returned_fasta_evidence
 ---
 
 # Reference Sequence Expert
 
 Inspect FASTA references before making claims about contigs, sequence lengths,
 GC content, ambiguous bases, or readiness for downstream variant interpretation.
+
+After inspecting a FASTA file, return compact tool-grounded evidence and request
+the reference-quality child review before the parent finalizes the reference
+section. End successful FASTA evidence with:
+
+```text
+NEXT_EXPERT: reference_quality
+NEXT_ACTION: review_reference_quality_from_returned_fasta_evidence
+```
