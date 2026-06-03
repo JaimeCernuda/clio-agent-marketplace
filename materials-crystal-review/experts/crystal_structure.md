@@ -8,6 +8,8 @@ prompt_profile: heavy
 specialization: materials_crystallography
 tools:
   - materials_inspect_cif
+children:
+  - symmetry_quality
 skills:
   - inspect_cif_structure
   - verify_symmetry_and_formula

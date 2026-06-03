@@ -7,6 +7,7 @@ prompt_id: clio.main.planner
 prompt_profile: heavy
 children:
   - mass_spec
+  - search_readiness
 skills:
   - route_mzml_review
 ---

@@ -8,6 +8,8 @@ prompt_profile: heavy
 specialization: genomics_variants
 tools:
   - genomics_summarize_vcf
+children:
+  - variant_impact
 skills:
   - summarize_variant_effects
   - flag_high_impact_variants
