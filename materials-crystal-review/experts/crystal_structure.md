@@ -13,9 +13,28 @@ children:
 skills:
   - inspect_cif_structure
   - verify_symmetry_and_formula
+parameters:
+  max_sync_delegation_rounds: 2
+  continuation_contracts:
+    - id: crystal_to_symmetry_quality
+      when_output_contains:
+        - space
+        - occupancy
+      match: any
+      next_expert: symmetry_quality
+      next_action: review_symmetry_occupancy_from_returned_cif_evidence
 ---
 
 # Crystal Structure Expert
 
 Inspect CIF files before making claims about formula, unit cell, space group,
 species, occupancies, atom sites, density, or simulation readiness.
+
+After inspecting a CIF file, return compact tool-grounded evidence and request
+the symmetry-quality child review before the parent finalizes materials
+readiness. End successful CIF evidence with:
+
+```text
+NEXT_EXPERT: symmetry_quality
+NEXT_ACTION: review_symmetry_occupancy_from_returned_cif_evidence
+```
