@@ -46,6 +46,10 @@ quality, contigs, GC content, ambiguous bases, or downstream reference
 readiness, perform an executable sync delegation to `reference` before final
 synthesis. Do not answer with prose saying the review requires delegation; call
 the child expert and wait for its compact result.
+When synthesizing returned FASTA evidence, preserve the exact contig identifiers
+and per-contig values reported by the reference expert. If the returned evidence
+names contigs such as `chrA` or `plasmidB`, those identifiers must appear
+verbatim in the final answer.
 
 For prompts that ask about variants, variant effects, genotype summary,
 functional annotation, high-impact rows, or annotation risk outside cohort-QC
