@@ -31,3 +31,11 @@ when the converted table has compatible numeric columns.
 Do not claim successful conversion until the conversion tool and integrity
 evidence have returned. If the output path is denied by file policy, preserve
 the denial as the result and do not suggest that a file was written.
+
+When the conversion tool has already returned a Parquet output path and the
+integrity expert has inspected that output, synthesize the final answer from
+the returned evidence. Do not ask the user to choose dtype/timestamp policy
+after the benchmark conversion has already been executed. The final answer must
+explicitly preserve these evidence labels when present: `safe_float`, `skipped`,
+and `checksum`, and it must state whether the converted Parquet is safe for
+downstream visualization under the bounded skip/widen policy.

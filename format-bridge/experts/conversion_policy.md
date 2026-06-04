@@ -50,6 +50,12 @@ bounded policy decision for this benchmark. Do not ask the user to confirm
 timestamp or dtype policy before integrity verification. If a column is skipped
 or widened, preserve that caveat and continue to `integrity` by ending with:
 
+- `safe_float`: list float columns or widened float columns that are safe under
+  the returned policy.
+- `skipped`: list unsafe/lossy columns that the conversion report skipped.
+- `checksum`: preserve any checksum, row count, or output-path integrity value
+  returned by the conversion tool.
+
 ```text
 NEXT_EXPERT: integrity
 NEXT_ACTION: verify_converted_parquet_integrity_from_conversion_report
