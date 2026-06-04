@@ -31,3 +31,9 @@ Do not finalize immediately after `crystal_structure` returns. If
 the compact CIF and symmetry evidence. The final answer must include the
 readiness judgment from `simulation_readiness`, not only the inspected CIF
 facts.
+
+After `simulation_readiness` returns, do not answer with future-tense delegation
+phrases such as "I am delegating" or "I will evaluate". Synthesize the completed
+child evidence into the final collaborator answer. The final answer must preserve
+`SrTiO3`, `Pm-3m`, structure/symmetry caveats, and the simulation-readiness
+judgment.
