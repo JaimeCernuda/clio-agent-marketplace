@@ -29,7 +29,7 @@ parameters:
         - staging limit
         - exceeds the allowed staging limit
       next_expert: analysis
-      next_action: run_sac_fallback IU.ANMO.00.BHZ 2010-02-27T06:30:00 duration=60s
+      next_action: run_sac_fallback with the user's requested region/recent window if present, otherwise IU.ANMO.00.BHZ 2010-02-27T06:30:00 duration=60s
       flags:
         DO_NOT_DELEGATE_DATA_AGAIN: "true"
 ---
@@ -50,6 +50,12 @@ For OSDF/Pelican, size, timeout, or unavailable-storage failures, return the
 blocker and SAC fallback contract below rather than asking for another search
 criterion.
 
+If the parent request names a place/state, geographic area, recent window,
+radius, or latitude/longitude, include those details verbatim in the blocker
+evidence. This child does not run EarthScope recovery, but the Analysis/SAC path
+must receive enough geographic context to run regional discovery instead of a
+fixed fallback.
+
 For the seismic workflow, any `webget_failed`, timeout, `resource_too_large`,
 connection-closed error, unavailable storage, or missing staged local path is a
 terminal NDP blocker for this turn. Preserve the tool's raw next_action as
@@ -58,7 +64,7 @@ lines are exactly:
 
 ```text
 NEXT_EXPERT: analysis
-NEXT_ACTION: run_sac_fallback IU.ANMO.00.BHZ 2010-02-27T06:30:00 duration=60s
+NEXT_ACTION: run_sac_fallback preserving the user's requested region/recent window if present; otherwise IU.ANMO.00.BHZ 2010-02-27T06:30:00 duration=60s
 DO_NOT_DELEGATE_DATA_AGAIN: true
 ```
 
