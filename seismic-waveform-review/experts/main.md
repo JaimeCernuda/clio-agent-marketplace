@@ -81,3 +81,9 @@ If any returned child result includes `NEXT_EXPERT: visualization`,
 `visualization` with the exact SAC path. Do not produce a final answer from
 that state. The final answer must cite an observed `FINAL_ARTIFACT:` PNG path or
 equivalent Visualization result proving `sac_plot_traces` ran.
+
+After Visualization returns `FINAL_ARTIFACT:` or an equivalent successful PNG
+artifact path, the workflow is complete. Do not delegate to Data, Analysis, SAC,
+or Visualization again from that state. Return a normal user-facing final answer
+that summarizes what was done, cites the SAC path and PNG artifact path, and
+mentions any NDP staging blocker or EarthScope fallback caveat already observed.
