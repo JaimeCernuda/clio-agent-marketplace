@@ -19,6 +19,7 @@ skills:
 parameters:
   continuation_contracts:
     - id: sac_waveform_to_visualization
+      allow_text_routing: true
       when_output_contains:
         - .sac
         - Trace statistics

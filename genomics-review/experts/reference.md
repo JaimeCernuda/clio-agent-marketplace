@@ -18,6 +18,7 @@ parameters:
   max_sync_delegation_rounds: 2
   continuation_contracts:
     - id: reference_to_quality_review
+      allow_text_routing: true
       when_output_contains:
         - GC
         - contig

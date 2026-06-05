@@ -18,6 +18,7 @@ parameters:
   max_sync_delegation_rounds: 2
   continuation_contracts:
     - id: crystal_to_symmetry_quality
+      allow_text_routing: true
       when_output_contains:
         - formula
         - space

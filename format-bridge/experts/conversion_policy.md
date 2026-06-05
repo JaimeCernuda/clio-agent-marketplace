@@ -19,6 +19,7 @@ parameters:
   max_sync_delegation_rounds: 2
   continuation_contracts:
     - id: conversion_policy_to_integrity
+      allow_text_routing: true
       when_output_contains:
         - parquet
         - skipped

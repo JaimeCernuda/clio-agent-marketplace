@@ -15,6 +15,7 @@ parameters:
   max_sync_delegation_rounds: 5
   continuation_contracts:
     - id: start_bounded_waveform_review
+      allow_text_routing: true
       when_request_contains:
         - bounded seismic waveform
         - NDP
@@ -24,6 +25,7 @@ parameters:
       next_expert: data
       next_action: search NDP for bounded seismic waveform datasets using default terms "seismic waveform Salton Sea"; attempt bounded staging of the best waveform resource; if staging is blocked, return the concrete Dataset ID, Resource URL, blocker, and SAC fallback intent without asking the user for selectors
     - id: ndp_blocker_to_analysis
+      allow_text_routing: true
       when_output_contains:
         - Pelican client
         - OSDF
@@ -34,6 +36,7 @@ parameters:
       next_expert: analysis
       next_action: run_sac_fallback using the user's requested region/recent window if present, otherwise IU.ANMO.00.BHZ 2010-02-27T06:30:00 duration=60s, plus the NDP blocker evidence; do not ask the user to choose a recovery path
     - id: sac_evidence_to_visualization
+      allow_text_routing: true
       when_output_contains:
         - .sac
         - Trace statistics

@@ -18,6 +18,7 @@ parameters:
   max_sync_delegation_rounds: 2
   continuation_contracts:
     - id: mass_spec_to_spectra_quality
+      allow_text_routing: true
       when_output_contains:
         - spectra
         - m/z

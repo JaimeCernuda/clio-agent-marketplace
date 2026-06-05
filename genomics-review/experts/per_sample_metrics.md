@@ -16,6 +16,7 @@ skills:
 parameters:
   continuation_contracts:
     - id: per_sample_metrics_to_outliers
+      allow_text_routing: true
       when_output_contains:
         - Call Rate
         - Heterozygosity

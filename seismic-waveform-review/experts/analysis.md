@@ -15,11 +15,13 @@ parameters:
   max_sync_delegation_rounds: 1
   continuation_contracts:
     - id: start_sac_recovery
+      allow_text_routing: true
       when_request_contains:
         - run_sac_fallback
       next_expert: sac_format
       next_action: if the parent request names a U.S. place/state or latitude/longitude, run regional EarthScope discovery for the recent window and bounded radius requested; otherwise fetch a bounded known waveform only as an explicit last fallback, inspect the SAC waveform, and compute trace statistics
     - id: sac_recovery_to_visualization
+      allow_text_routing: true
       when_output_contains:
         - .sac
         - Trace statistics

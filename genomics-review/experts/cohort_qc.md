@@ -20,6 +20,7 @@ parameters:
   max_sync_delegation_rounds: 4
   continuation_contracts:
     - id: cohort_metrics_to_outliers
+      allow_text_routing: true
       when_output_contains:
         - call rate
         - heterozygosity
@@ -27,6 +28,7 @@ parameters:
       next_expert: cohort_outliers
       next_action: interpret_cohort_outliers_from_per_sample_metrics
     - id: cohort_outliers_to_manifest
+      allow_text_routing: true
       when_output_contains:
         - drop
         - sample

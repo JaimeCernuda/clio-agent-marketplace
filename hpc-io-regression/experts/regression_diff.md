@@ -16,6 +16,7 @@ skills:
 parameters:
   continuation_contracts:
     - id: regression_diff_to_root_cause
+      allow_text_routing: true
       when_output_contains:
         - regression
         - write

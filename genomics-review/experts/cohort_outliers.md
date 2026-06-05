@@ -14,6 +14,7 @@ skills:
 parameters:
   continuation_contracts:
     - id: cohort_outliers_to_manifest_reconciliation
+      allow_text_routing: true
       when_output_contains:
         - Keep
         - Drop

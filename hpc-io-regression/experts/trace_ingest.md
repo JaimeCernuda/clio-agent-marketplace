@@ -20,6 +20,7 @@ parameters:
   max_sync_delegation_rounds: 2
   continuation_contracts:
     - id: trace_ingest_to_regression_diff
+      allow_text_routing: true
       when_output_contains:
         - baseline
         - candidate

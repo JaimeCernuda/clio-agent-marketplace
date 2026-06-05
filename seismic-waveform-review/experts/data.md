@@ -16,6 +16,7 @@ parameters:
   max_sync_delegation_rounds: 1
   continuation_contracts:
     - id: start_ndp_catalog_discovery
+      allow_text_routing: true
       when_request_contains:
         - bounded seismic waveform
         - NDP
@@ -23,6 +24,7 @@ parameters:
       next_expert: ndp_catalog
       next_action: search NDP with terms "seismic waveform Salton Sea"; choose the best waveform resource, attempt bounded staging, and return concrete dataset/resource ids plus any staging blocker; do not ask the user for station/time selectors
     - id: ndp_blocker_to_sac_recovery
+      allow_text_routing: true
       when_output_contains:
         - webget_failed
         - timeout

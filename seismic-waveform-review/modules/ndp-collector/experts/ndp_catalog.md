@@ -18,6 +18,7 @@ skills:
 parameters:
   continuation_contracts:
     - id: ndp_blocker_to_sac_recovery
+      allow_text_routing: true
       when_output_contains:
         - webget_failed
         - timeout

@@ -19,6 +19,7 @@ parameters:
   max_sync_delegation_rounds: 2
   continuation_contracts:
     - id: terrain_derivation_to_suitability
+      allow_text_routing: true
       when_output_contains:
         - slope
         - elevation
