@@ -15,6 +15,7 @@ signature:
       description: Event-context evidence or explicit capability gap.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   errors: true
 ---

@@ -15,6 +15,7 @@ signature:
       description: CSV profile, required columns, displacement ranges, uncertainty ranges, and caveats.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true

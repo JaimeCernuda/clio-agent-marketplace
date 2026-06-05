@@ -15,6 +15,7 @@ signature:
       description: Station coverage and suitability assessment.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   errors: true
 ---

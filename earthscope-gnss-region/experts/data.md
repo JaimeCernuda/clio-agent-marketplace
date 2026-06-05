@@ -15,6 +15,7 @@ signature:
       description: Resolved region, NDP catalog candidates, selected station/resource, and staged CSV evidence.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true
@@ -57,9 +58,10 @@ Required child order:
 3. `ndp_resource_resolver`: stage the selected station-specific CSV.
 
 Return compact parent-consumable evidence containing the latest merged
-`workflow_state`. A successful acquisition state requires a concrete
-station-specific time-series CSV returned by NDP tooling, not station metadata
-or an index file. At minimum, successful completion should include:
+`workflow_state` in the structured `workflow_state` output, `evidence`, or final
+answer. A successful acquisition state requires a concrete station-specific
+time-series CSV returned by NDP tooling, not station metadata or an index file.
+At minimum, successful completion should include:
 
 ```json
 {

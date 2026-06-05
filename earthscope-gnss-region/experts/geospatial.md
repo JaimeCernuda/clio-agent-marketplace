@@ -15,6 +15,7 @@ signature:
       description: Region object with center, radius or bbox, confidence, provenance, and warnings.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   errors: true
 ---

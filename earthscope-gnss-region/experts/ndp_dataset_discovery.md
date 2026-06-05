@@ -15,6 +15,7 @@ signature:
       description: NDP search evidence with candidate dataset ids, titles, and resource hints.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true

@@ -15,6 +15,7 @@ signature:
       description: Final concise scientific brief with provenance and limitations.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true
@@ -23,6 +24,9 @@ structured_outputs:
 # EarthScope GNSS Synthesis Expert
 
 Merge the child evidence into a final answer for a scientific collaborator.
+Use only typed `workflow_state`, tool evidence, and child summaries that contain
+concrete provenance. The final answer is user-facing, but it should still
+preserve exact paths and limitations so the parent/root can finish cleanly.
 Include:
 
 - resolved region;

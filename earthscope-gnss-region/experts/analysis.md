@@ -15,6 +15,7 @@ signature:
       description: GNSS profile, event context capability status, station network suitability, and analysis limitations.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true
@@ -62,8 +63,9 @@ Required work:
 3. Provide event-context limitations through `seismic_event_catalog` when the
    user asked about seismic activity and no live event catalog tool is available.
 
-Return compact parent-consumable evidence containing merged `workflow_state`.
-Successful completion should include:
+Return compact parent-consumable evidence containing merged `workflow_state` in
+the structured `workflow_state` output, `evidence`, or final answer. Successful
+completion should include:
 
 ```json
 {

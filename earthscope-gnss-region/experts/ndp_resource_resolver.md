@@ -15,6 +15,7 @@ signature:
       description: Staged CSV path, selected source URL, size, and any staging blocker.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true

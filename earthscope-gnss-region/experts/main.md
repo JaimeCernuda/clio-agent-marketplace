@@ -15,6 +15,7 @@ signature:
       description: Final collaborator-facing answer with provenance, artifact paths, and limitations.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true
@@ -100,10 +101,17 @@ produce a user-facing final answer until `synthesis` has received child
 evidence from geospatial resolution, NDP discovery, concrete resource staging,
 CSV profiling, and visualization.
 
-Child experts must return compact evidence for the parent. Prefer a JSON
-`workflow_state` object in `evidence` or in the final answer. The root runtime
-continues from typed state fields, not from city names, station IDs, filenames,
-or prose markers.
+Child experts must return compact evidence for the parent. Every child final
+answer must include a JSON `workflow_state` object in the structured
+`workflow_state` output, `evidence`, or final answer. The root runtime continues
+from typed state fields, not from city names, station IDs, filenames, or prose
+markers.
+
+Treat child final answers as parent-consumed evidence, not user-facing prose.
+Each child should preserve exact identifiers, source URLs, local paths, artifact
+paths, status fields, blockers, and next-state facts needed by downstream
+experts. If a child cannot prove a state, it must return a typed blocker instead
+of a confident narrative.
 
 1. `geospatial`: resolve the requested geography before any NDP catalog work.
 2. `data`: discover NDP/EarthScope station resources for the resolved region,

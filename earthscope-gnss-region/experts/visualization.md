@@ -15,6 +15,7 @@ signature:
       description: PNG artifact path, size, plotted rows, plotted columns, and caveats.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   artifacts: true
   errors: true
@@ -35,10 +36,12 @@ provide `output_path`, the final answer must cite only the path that the tool
 actually returns or the path that exists in successful tool evidence.
 
 Return the exact `output_path`, `output_size_bytes`, plotted columns, rows
-plotted, source CSV path, and any missing-column caveats. Do not claim a figure
-exists unless `ndp_plot_csv_timeseries` returns success and the cited path is
-the exact existing path. Do not rewrite `/home/jcernuda/clio-agent/.clio/...`
-paths to `/home/jcernuda/.clio/...`.
+plotted, source CSV path, and any missing-column caveats as parent-consumable
+evidence. Include the JSON `workflow_state` in the structured `workflow_state`
+output, `evidence`, or final answer. Do not claim a figure exists unless
+`ndp_plot_csv_timeseries` returns success and the cited path is the exact
+existing path. Do not rewrite `/home/jcernuda/clio-agent/.clio/...` paths to
+`/home/jcernuda/.clio/...`.
 
 After successful plotting include parent-consumable JSON evidence:
 

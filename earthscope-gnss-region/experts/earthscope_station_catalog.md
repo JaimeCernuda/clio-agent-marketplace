@@ -15,6 +15,7 @@ signature:
       description: Ranked nearby station candidates with network/status/distance evidence.
       type: string
 structured_outputs:
+  workflow_state: true
   evidence: true
   errors: true
 tools:
