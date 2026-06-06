@@ -59,15 +59,21 @@ If the geography is ambiguous or unsupported, set `geospatial.status` to
 `ambiguous` or `unsupported` and include the blocker in `errors`; do not pretend
 coordinates were resolved.
 
-For common U.S. locations, use stable public geographic knowledge and say so.
-Do not depend on a fixed list of benchmark cities. If the request provides an
-explicit coordinate, bounding box, county, state, or radius, preserve that
-geometry rather than replacing it with a city-center default. If the user gives
-only a place name, choose a conservative regional-analysis radius and report the
-default as a warning.
+For common U.S. locations, use stable public geographic knowledge and say
+`provenance="model_geographic_prior"` unless the user supplied explicit
+coordinates/bounds. Do not cite USGS, EarthScope, UNAVCO, station catalogs, or
+other named data sources as geospatial provenance unless a tool result or user
+input actually provided that source. Do not depend on a fixed list of benchmark
+cities. If the request provides an explicit coordinate, bounding box, county,
+state, or radius, preserve that geometry rather than replacing it with a
+city-center default. If the user gives only a place name, choose a conservative
+regional-analysis radius and report the default as a warning.
 
 Do not query NDP or EarthScope directly from this expert.
 Do not make data availability claims. Your output may warn about ambiguous or
 low-confidence geography, but it must not say that EarthScope/GNSS station or
 time-series data exists or does not exist. Data availability belongs to the data
 and catalog experts after they call tools.
+
+If downstream evidence says catalog search is incomplete, treat that as a
+search-method gap, not regional absence.

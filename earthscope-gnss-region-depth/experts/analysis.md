@@ -13,7 +13,7 @@ signature:
       type: string
   outputs:
     answer:
-      description: GNSS profile, event context capability status, station network suitability, and analysis limitations.
+      description: GNSS profile, station network suitability, optional event context evidence, and analysis limitations.
       type: string
 structured_outputs:
   workflow_state: true
@@ -36,6 +36,7 @@ parameters:
       when_state:
         acquisition.status: staged
         acquisition.analysis_ready: true
+        resource_candidate.geographically_grounded: true
         profile.status:
           exists: false
       match: all
@@ -65,8 +66,16 @@ Required work:
 
 1. Profile the staged GNSS CSV through `gnss_timeseries_analysis`.
 2. Assess station/network suitability through `station_network_analysis`.
-3. Provide event-context limitations through `seismic_event_catalog` when the
-   user asked about seismic activity and no live event catalog tool is available.
+
+Optional capability:
+
+- Request `seismic_event_catalog` only when the user explicitly asks for
+  earthquakes, event catalogs, magnitudes, depths, epicenters, or when prior
+  tool evidence says an event-context layer is required. A general regional
+  "seismic activity" request over NDP/EarthScope GNSS CSV evidence does not by
+  itself require this child. If you do not call it, do not add
+  `event_context` to the workflow state and do not report event-catalog
+  limitations as a mandatory result.
 
 Return compact parent-consumable evidence containing merged `workflow_state` in
 the structured `workflow_state` output, `evidence`, or final answer. Successful
@@ -83,10 +92,6 @@ completion should include:
     "network_analysis": {
       "status": "complete",
       "limitations": []
-    },
-    "event_context": {
-      "status": "blocked",
-      "blocker": "no live event catalog tool available in this pack"
     }
   }
 }
@@ -94,3 +99,29 @@ completion should include:
 
 If the staged CSV path is missing, set `profile.status` to `blocked` and return
 the missing acquisition state instead of trying stale local files.
+
+Before returning parent evidence, audit child summaries for unsupported
+cadence/duration/completeness/suitability claims. If a child inferred "30-day
+record", "30 s cadence", "two-week record", "full record", "continuous", "no
+large data gaps", "per-epoch noise", `Hz`, "hours", "days", "high
+suitability", "excellent coverage", "low noise", or "ready for deformation
+analysis" from scan-limited profile evidence, omit that phrase from the
+returned analysis and workflow state. Keep only grounded fields such as station
+id, distance, required columns, uncertainty column ranges, staged path, source
+URL, `rows_scanned`/`rows_examined`, `rows_profiled`/`numeric_summary_rows`, and
+this exact caveat: full-file cadence/duration/gap quality was not verified.
+Missing-value claims must cite `missing_values`, `missing_values_rows`, and
+`missing_values_scope=profiled_rows`; otherwise say missing-value status was
+not assessed. Do not turn `qChannel` min/max/mean into "good", "high quality",
+or "quality flag high" unless a tool explicitly decodes that flag. Do not call
+uncertainty means "low noise", "sub-centimetre", "high-quality", or "suitable
+for deformation analysis" unless a tool provides explicit noise/fitness
+criteria. Numeric uncertainty means alone are descriptive statistics, not a
+quality certificate.
+
+If you did call the event-context child, audit its summary for unsupported
+catalog claims. If the pack has no live event-catalog tool, do not return
+phrases such as "no events", "zero events", "events have not been
+cataloged/catalogued", or `event_catalog.status=metadata_found`. Return only
+child-grounded `workflow_state.event_context.status=blocked` with
+`limitations=["no_live_event_catalog_tool"]` and a short capability-gap note.

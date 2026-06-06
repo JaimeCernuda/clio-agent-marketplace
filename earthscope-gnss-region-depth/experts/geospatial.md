@@ -22,6 +22,7 @@ children:
   - ndp_dataset_discovery
 parameters:
   enforce_child_contract_order: true
+  bubble_child_evidence_on_completion: true
   max_sync_delegation_rounds: 4
   continuation_contracts:
     - id: geospatial_to_discovery
@@ -29,7 +30,14 @@ parameters:
         geospatial.status: resolved
       match: all
       next_expert: ndp_dataset_discovery
-      next_action: search NDP EarthScope GNSS station metadata and station-specific raw CSV resources for the resolved geography
+      next_action: search NDP first with broad EarthScope/GNSS/GPS/CSV/raw_csv catalog terms before any station/catalog/time-series narrowing, then use the resolved geography only after metadata exists
+    - id: incomplete_search_to_broad_discovery
+      when_state:
+        catalog.status: search_incomplete
+      match: all
+      next_expert: ndp_dataset_discovery
+      next_action: repeat discovery with search_terms ["EarthScope", "GNSS", "GPS", "CSV", "raw_csv"] before making any regional no-data claim
+      allow_repeat: true
 ---
 
 # Geospatial Resolution Expert
@@ -71,15 +79,22 @@ If the geography is ambiguous or unsupported, set `geospatial.status` to
 `ambiguous` or `unsupported` and include the blocker in `errors`; do not pretend
 coordinates were resolved.
 
-For common U.S. locations, use stable public geographic knowledge and say so.
-Do not depend on a fixed list of benchmark cities. If the request provides an
-explicit coordinate, bounding box, county, state, or radius, preserve that
-geometry rather than replacing it with a city-center default. If the user gives
-only a place name, choose a conservative regional-analysis radius and report the
-default as a warning.
+For common U.S. locations, use stable public geographic knowledge and say
+`provenance="model_geographic_prior"` unless the user supplied explicit
+coordinates/bounds. Do not cite USGS, EarthScope, UNAVCO, station catalogs, or
+other named data sources as geospatial provenance unless a tool result or user
+input actually provided that source. Do not depend on a fixed list of benchmark
+cities. If the request provides an explicit coordinate, bounding box, county,
+state, or radius, preserve that geometry rather than replacing it with a
+city-center default. If the user gives only a place name, choose a conservative
+regional-analysis radius and report the default as a warning.
 
 Do not query NDP or EarthScope directly from this expert.
 Do not make data availability claims. Your output may warn about ambiguous or
 low-confidence geography, but it must not say that EarthScope/GNSS station or
 time-series data exists or does not exist. Data availability belongs to the data
 and catalog experts after they call tools.
+
+If a child returns `catalog.status=search_incomplete`, repeat
+`ndp_dataset_discovery` with broad catalog terms. Do not summarize that state as
+regional absence.

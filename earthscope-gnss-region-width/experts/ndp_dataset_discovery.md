@@ -22,6 +22,7 @@ structured_outputs:
 tools:
   - ndp_search_datasets
   - ndp_get_dataset_details
+  - ndp_stage_resource
 ---
 
 # NDP EarthScope Dataset Discovery Expert
@@ -31,6 +32,25 @@ Search NDP for EarthScope GNSS resources using explicit terms such as
 label. Prefer `server="global"` and bounded result limits. Use station/resource
 terms only after live catalog evidence supports them; do not hardcode a station
 or resource because the prompt mentioned a familiar city.
+
+This expert owns broad NDP catalog discovery and station metadata acquisition.
+If live NDP evidence identifies the EarthScope station metadata catalog
+resource, stage that metadata CSV with `ndp_stage_resource` and return the exact
+metadata `local_path` and source URL in `workflow_state.acquisition.metadata_path`.
+Do not finish this expert with a metadata dataset id, resource name, or download
+URL alone. If the metadata CSV resource is visible in `ndp_search_datasets` or
+`ndp_get_dataset_details`, the next tool call must be `ndp_stage_resource` for
+that metadata resource before station ranking can proceed.
+Do not stage station-specific time-series CSVs here; that belongs to
+`ndp_resource_resolver` after `earthscope_station_catalog` ranks stations.
+
+Search coverage is part of the evidence. Before returning no candidates, you
+must have called `ndp_search_datasets` with broad EarthScope catalog terms that
+include `EarthScope`, `GNSS` or `GPS`, and `CSV` or `raw_csv`.
+Coordinate-only, city-name, or generic `GNSS station time-series` searches are
+insufficient for a no-data conclusion. If tool evidence reports
+`search_coverage.status=incomplete`, return `catalog.status=search_incomplete`
+and the required broad search terms instead of saying no stations exist.
 
 Return candidate dataset ids/names, titles, tags, resource formats, resource
 URLs, and the exact search arguments. Separate these two classes of evidence:
@@ -55,6 +75,12 @@ Return parent-consumable JSON evidence:
       "searches": [],
       "candidate_count": 0
     },
+    "acquisition": {
+      "status": "metadata_only",
+      "metadata_path": "<local path to staged station metadata CSV if staged>",
+      "metadata_source_url": "<tool-returned metadata source URL>",
+      "analysis_ready": false
+    },
     "resource_candidate": {
       "status": "selected",
       "dataset_id": "<dataset id>",
@@ -69,11 +95,31 @@ Return parent-consumable JSON evidence:
 ```
 
 If no usable station CSV resource is found, set `catalog.status` to
-`no_candidates` or `blocked`, set `resource_candidate.status` to `missing`, and
-include exact search arguments and observed blockers. If only station metadata
-or an index CSV is found, set `catalog.status` to `metadata_found`,
-`resource_candidate.status` to `metadata_only`, and include the metadata
-dataset/resource ids without marking them as selected for analysis.
+`metadata_found` when station metadata exists; only set `catalog.status` to
+`no_candidates` after NDP search finds no EarthScope station metadata or
+time-series candidate at all. Set `resource_candidate.status` to `metadata_only`
+for station metadata/index CSVs and include the metadata dataset/resource ids
+without marking them as selected for analysis. Do not conclude that no
+time-series data exists until station ranking and station-specific resource
+search have been exhausted.
+
+If the search coverage is incomplete, return:
+
+```json
+{
+  "workflow_state": {
+    "catalog": {
+      "status": "search_incomplete",
+      "searches": [],
+      "blocker": "broad EarthScope GNSS/GPS CSV search has not been run"
+    },
+    "resource_discovery": {
+      "status": "search_required",
+      "search_terms": ["EarthScope", "GNSS", "GPS", "CSV", "raw_csv"]
+    }
+  }
+}
+```
 
 Do not use previously observed benchmark station or resource names as routing
 evidence. Station and resource candidates must come from the current live NDP

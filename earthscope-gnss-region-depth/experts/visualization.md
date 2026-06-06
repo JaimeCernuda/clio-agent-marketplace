@@ -26,6 +26,7 @@ children:
   - synthesis
 parameters:
   enforce_child_contract_order: true
+  bubble_child_evidence_on_completion: true
   max_sync_delegation_rounds: 4
   continuation_contracts:
     - id: artifact_to_synthesis
@@ -33,7 +34,7 @@ parameters:
         artifact.status: ready
       match: all
       next_expert: synthesis
-      next_action: synthesize region, NDP source URL, staged CSV profile, station suitability, event-catalog limitations, and PNG artifact
+      next_action: synthesize from the latest typed workflow state; cite the staged station CSV and PNG artifact, and do not carry forward earlier metadata-only acquisition blockers once acquisition.analysis_ready is true
 ---
 
 # GNSS Visualization Expert
@@ -52,8 +53,16 @@ plotted, source CSV path, and any missing-column caveats as parent-consumable
 evidence. Include the JSON `workflow_state` in the structured `workflow_state`
 output, `evidence`, or final answer. Do not claim a figure exists unless
 `ndp_plot_csv_timeseries` returns success and the cited path is the exact
-existing path. Do not rewrite `/home/jcernuda/clio-agent/.clio/...` paths to
-`/home/jcernuda/.clio/...`.
+existing path. Do not rewrite active-workspace artifact paths into home-directory, process-local, shortened, or reconstructed paths.
+Do not claim "no missing data", "no parsing issues", "no glitches", "low
+noise", "continuous", or full-file completeness from a successful plot. Plot
+success only proves that the selected columns were plotted for the returned
+`rows_plotted`; it does not prove full-file quality or gap-free behavior.
+
+When handing off to synthesis, pass the latest successful acquisition/profile
+and artifact state as the authoritative state. Earlier metadata-only blockers
+from catalog discovery are provenance, not current blockers, once a station
+time-series CSV has been staged, profiled, and plotted.
 
 After successful plotting include parent-consumable JSON evidence:
 

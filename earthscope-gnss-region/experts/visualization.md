@@ -34,14 +34,20 @@ provide a requested output path, omit `output_path` and let
 `ndp_plot_csv_timeseries` choose its default beside the staged CSV. If you do
 provide `output_path`, the final answer must cite only the path that the tool
 actually returns or the path that exists in successful tool evidence.
+Do not request `/tmp/...` output paths unless the user explicitly asked for
+them; benchmark artifacts should remain under the active workspace/staging
+root chosen by the tool.
 
 Return the exact `output_path`, `output_size_bytes`, plotted columns, rows
 plotted, source CSV path, and any missing-column caveats as parent-consumable
 evidence. Include the JSON `workflow_state` in the structured `workflow_state`
 output, `evidence`, or final answer. Do not claim a figure exists unless
 `ndp_plot_csv_timeseries` returns success and the cited path is the exact
-existing path. Do not rewrite `/home/jcernuda/clio-agent/.clio/...` paths to
-`/home/jcernuda/.clio/...`.
+existing path. Do not rewrite active-workspace artifact paths into home-directory, process-local, shortened, or reconstructed paths.
+Do not claim "no missing data", "no parsing issues", "no glitches", "low
+noise", "continuous", or full-file completeness from a successful plot. Plot
+success only proves that the selected columns were plotted for the returned
+`rows_plotted`; it does not prove full-file quality or gap-free behavior.
 
 After successful plotting include parent-consumable JSON evidence:
 

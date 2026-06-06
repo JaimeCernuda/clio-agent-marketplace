@@ -32,13 +32,35 @@ parameters:
     - id: start_with_ndp_discovery
       next_expert: ndp_dataset_discovery
       next_action: search NDP for EarthScope GNSS station metadata and station-specific raw CSV resources near the resolved region
+    - id: discovery_metadata_requires_staging
+      when_child_completed: ndp_dataset_discovery
+      when_state:
+        catalog.status:
+          in:
+            - candidates_found
+            - metadata_found
+            - partial
+        acquisition.metadata_path:
+          exists: false
+      match: all
+      next_expert: ndp_dataset_discovery
+      next_action: stage the EarthScope station metadata CSV with ndp_stage_resource and return workflow_state.acquisition.metadata_path before station ranking
+      allow_repeat: true
     - id: discovery_to_station_catalog
       when_child_completed: ndp_dataset_discovery
+      when_state:
+        acquisition.metadata_path:
+          exists: true
       match: all
       next_expert: earthscope_station_catalog
-      next_action: rank nearby GNSS stations and preserve selected station/resource evidence
+      next_action: rank nearby GNSS stations using the exact staged acquisition.metadata_path and preserve selected station/resource evidence
     - id: station_catalog_to_resource
       when_child_completed: earthscope_station_catalog
+      when_state:
+        station_catalog.status:
+          in:
+            - ranked
+            - ranked_metadata_only
       match: all
       next_expert: ndp_resource_resolver
       next_action: stage the selected station-specific CSV and return typed acquisition state
@@ -61,6 +83,12 @@ Required child order:
 2. `earthscope_station_catalog`: rank station candidates when metadata supports
    that comparison.
 3. `ndp_resource_resolver`: stage the selected station-specific CSV.
+
+Do not call `earthscope_station_catalog` until structured state contains an
+exact `acquisition.metadata_path` returned by `ndp_stage_resource` for the
+EarthScope station metadata CSV. If discovery found the metadata catalog but did
+not stage it, send the work back to `ndp_dataset_discovery`; a guessed filename
+such as `earthscope_stations.csv` is not a staged path.
 
 Return compact parent-consumable evidence containing the latest merged
 `workflow_state` in the structured `workflow_state` output, `evidence`, or final
