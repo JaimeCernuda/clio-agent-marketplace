@@ -54,6 +54,10 @@ parameters:
       match: all
       next_expert: synthesis
       next_action: report the honest no-significant-impact finding without forcing a map
+    - id: analysis_to_visualization_fallback
+      when_child_completed: analysis
+      next_expert: visualization
+      next_action: render the situational map from the acquired layers over the region
     - id: visualization_to_synthesis
       when_child_completed: visualization
       next_expert: synthesis
