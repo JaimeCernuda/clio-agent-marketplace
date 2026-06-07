@@ -23,12 +23,22 @@ parameters:
     - id: start_with_fire_discovery
       next_expert: fire_discovery
       next_action: find active wildfires and save their perimeters; the runtime grounds workflow_state.region (the leading fire's bbox) from the query result
-    - id: fire_to_smoke
-      when_child_completed: fire_discovery
+    - id: region_to_smoke
+      when_state:
+        region:
+          exists: true
+        acquisition.smoke_path:
+          exists: false
+      match: all
       next_expert: smoke_forecast
       next_action: query the NWS smoke forecast over the region bbox in prior workflow_state.region (use the actual numbers) and save it
     - id: smoke_to_air
-      when_child_completed: smoke_forecast
+      when_state:
+        acquisition.smoke_path:
+          exists: true
+        acquisition.monitors_path:
+          exists: false
+      match: all
       next_expert: air_quality
       next_action: query AirNow monitors over the same region bbox in prior workflow_state.region (use the actual numbers) and save it
 ---
