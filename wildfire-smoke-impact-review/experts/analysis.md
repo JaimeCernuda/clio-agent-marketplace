@@ -30,12 +30,21 @@ Own the judgement at the heart of this case: of the active fires acquired,
 which one is actually affecting people downwind, and who is worst off.
 
 **Delegate `downwind_impact` to COMPUTE the smoke∩monitor overlap** (it calls a
-real spatial-join tool). Then set impact from its typed result:
-`impact.present = (workflow_state.impact_overlap.monitors_under_smoke > 0)`, and
-when true, set `impact.selected_fire` (the fire whose region produced that
-overlap) and `impact.affected_communities` from the matched monitors. Do NOT ask
-for data or stall — the acquisition + overlap evidence are in workflow_state;
-reason from them.
+real spatial-join tool), then judge from its result. Reason over the evidence —
+but **do not contradict the computed overlap.** In this case, "downwind impact"
+*is* monitored population sitting inside the smoke footprint:
+
+- If `workflow_state.impact_overlap.monitors_under_smoke > 0`, impact **IS**
+  present. Set `impact.present = true`, `impact.selected_fire` to the chosen fire
+  in `workflow_state.fire.selected` (name it), and
+  `impact.affected_communities` to those monitors (from
+  `workflow_state.impact_overlap.monitors`). Saying "no impact" here is a wrong
+  answer that ignores the data.
+- Only if `monitors_under_smoke == 0` is it a genuine null — set
+  `impact.present = false` with a one-line reason.
+
+Do NOT ask for data or stall — the acquisition + overlap evidence are already in
+workflow_state; reason from them.
 
 You MUST always return `workflow_state.impact.present` as an explicit boolean
 (true or false) — never omit it, even when uncertain (default to false with a
