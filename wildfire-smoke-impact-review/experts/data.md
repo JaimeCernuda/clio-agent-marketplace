@@ -23,15 +23,6 @@ parameters:
     - id: start_with_fire_discovery
       next_expert: fire_discovery
       next_action: find active wildfires and save their perimeters; the runtime grounds workflow_state.region (the leading fire's bbox) from the query result
-    - id: retry_fire_if_no_region
-      when_child_completed: fire_discovery
-      when_state:
-        region:
-          exists: false
-      match: all
-      next_expert: fire_discovery
-      next_action: the previous attempt did not return active fire perimeters — query the WFIGS interagency fire FeatureServer again with returnGeometry=true (incident type WF) and save the result so a region can be derived
-      allow_repeat: true
     - id: region_to_smoke
       when_state:
         region:
