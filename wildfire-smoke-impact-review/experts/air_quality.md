@@ -31,6 +31,10 @@ Method:
    AQI value and category label fields and the monitor coordinates.
 3. Return compact monitor points for the region with their AQI readings.
 
+When you query the AirNow feature service, pass
+`output_path="air_quality.geojson"` so the full monitor FeatureCollection is
+saved to the artifact directory for the map step. Record the returned path.
+
 Report typed `structured_outputs`. These monitors are the population-impact
 ground truth: smoke forecast says where smoke *should* be, monitors say what
 people are *actually* breathing. If no monitors fall in the region, record

@@ -36,6 +36,11 @@ Method:
    fully contained fire is usually *not* the impactful one. Include perimeter
    geometry for the leading candidates so geography can derive a region.
 
+When you query the perimeter feature service, pass
+`output_path="fire_perimeter.geojson"` so the full perimeter FeatureCollection
+is saved to the artifact directory for the map step. The tool returns the real
+saved path — record it.
+
 Report typed `structured_outputs`. If the service returns no active wildfires,
 say so plainly — that is a valid live finding. Keep results compact; do not dump
 every attribute of every fire.

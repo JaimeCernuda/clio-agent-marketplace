@@ -34,6 +34,10 @@ Method:
 3. Return compact smoke polygons clipped to the region plus a clear
    `smoke_present` flag.
 
+When you query the smoke feature service, pass
+`output_path="smoke_forecast.geojson"` so the full smoke FeatureCollection is
+saved to the artifact directory for the map step. Record the returned path.
+
 Report typed `structured_outputs`. Zero smoke polygons over the region is a real
 and important result (it usually means no active downwind impact from this fire)
 — record `smoke_present: false` rather than widening the search to force a hit.
