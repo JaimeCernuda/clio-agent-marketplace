@@ -1,8 +1,8 @@
 ---
 id: geography
 title: Geography Expert
-tier: 2
-parent_id: main
+tier: 3
+parent_id: data
 prompt_profile: heavy
 specialization: region_resolution
 module:

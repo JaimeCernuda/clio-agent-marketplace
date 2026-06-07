@@ -9,9 +9,10 @@ specialization: downwind_impact_analysis
 children:
   - downwind_impact
 structured_outputs:
-  impact_present: Whether any active fire is putting smoke over monitored population.
-  selected_fire: The fire chosen by downwind impact, with the reason.
-  affected_communities: Ranked communities/counties with their AQI readings.
+  workflow_state: true
+  evidence: true
+  errors: true
+  delegation: true
 ---
 
 # Impact Analysis Expert
@@ -34,6 +35,19 @@ Principles:
   fire is contained — report `impact_present: false` honestly. That is a correct
   outcome, not a failure.
 
-Emit typed `structured_outputs` (impact_present, selected_fire,
-affected_communities) so the orchestrator can decide whether a map is warranted
-and so synthesis can brief accurately.
+Return typed `workflow_state.impact` so the orchestrator can route (a map only
+when impact exists) and synthesis can brief accurately:
+
+```json
+{"workflow_state": {"impact": {
+  "present": true,
+  "selected_fire": {"name": "...", "reason": "smoke over monitored population"},
+  "affected_communities": [{"name": "...", "aqi": 168}]
+}}}
+```
+
+Set `impact.present=true` only when a fire's smoke footprint overlaps monitored
+population with degraded AQI. Set `impact.present=false` (a correct outcome, not
+a failure) when nothing lines up — no smoke over monitors, or all active fires
+contained. Never claim impact from smoke alone or monitors alone; impact is the
+intersection.
