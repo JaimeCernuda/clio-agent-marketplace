@@ -6,7 +6,7 @@ parent_id: analysis
 prompt_profile: heavy
 specialization: spatial_overlap
 module:
-  kind: chain_of_thought
+  kind: react
 tools:
   - geospatial_points_in_polygons
 structured_outputs:
