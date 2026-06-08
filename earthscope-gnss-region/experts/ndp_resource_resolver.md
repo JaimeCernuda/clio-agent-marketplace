@@ -76,14 +76,14 @@ is really there. If you alter the path in any way, the file will not be found an
 the whole workflow stalls right here.
 
 So: `ndp_stage_resource` returns a tool result containing a `local_path` field
-(a string like
-`/home/<user>/clio-agent/.clio/artifacts/ndp-staging/<STATION>.<NET>.LY_.<NN>.csv`).
+(a string under the workspace artifact root, by convention
+`<workspace>/.clio/artifacts/ndp-staging/<STATION>.<NET>.LY_.<NN>.csv`).
 Copy that string into `acquisition.local_path` **verbatim, character for
-character**. Do NOT:
+character**, including whatever real workspace-root prefix it carries. Do NOT:
 
 - shorten it, prettify it, or normalize it;
-- drop, add, or rename ANY directory segment (e.g. do NOT turn
-  `/home/u/clio-agent/.clio/...` into `/home/u/.clio/...`);
+- drop, add, or rename ANY directory segment (e.g. do NOT collapse a
+  `.../clio-agent/.clio/...` prefix into `.../.clio/...`);
 - reconstruct it from the station id, the resource name, or the source URL;
 - substitute a `/tmp/...` path or a path you remember from another run.
 
@@ -133,6 +133,15 @@ unless the user explicitly requested one; let CLIO default the staging directory
   `resource_candidate.geographically_grounded=true` ONLY when that station id is
   in the ranked `station_catalog.station_ids` for this region.
 
+`resource_candidate.station_id` MUST be the station you actually staged — i.e. the
+id encoded in the `local_path` filename you just copied (e.g. `P475` for
+`.../P475.CI.LY_.20.csv`). It is NOT the top-ranked candidate, NOT a neighbouring
+station, and NOT a different id from the ranked list. If you staged `P475`, set
+`resource_candidate.station_id=P475`; never record `SIO5` (or any other ranked
+station) while `acquisition.local_path` points at `P475`'s CSV. The station in
+`resource_candidate.station_id`, the station in `acquisition.local_path`'s
+filename, and the station whose CSV you searched/staged must all be identical.
+
 **Commit early — do not over-search.** As soon as ONE station yields a concrete
 station CSV in Step 2, go straight to Step 3 and stage it, then Step 4. Do not
 search additional stations, do not re-run `ndp_search_datasets` for a station you
@@ -144,20 +153,26 @@ every ranked station has been covered by a `resource_name` per-station search.
 
 ## Worked example (follow this shape exactly)
 
-`ndp_stage_resource` returns this tool result:
+`ndp_stage_resource` returns a tool result whose `local_path` lives under the
+workspace artifact root — by convention
+`<workspace>/.clio/artifacts/ndp-staging/<station>.<NET>.LY_.<NN>.csv`. The
+example below uses `<workspace>` as a placeholder for the real workspace-root
+prefix the tool returned; do NOT type a literal home path. Use the EXACT
+`local_path` string the tool returned in THIS run, copied character for
+character — including whatever real `<workspace>` prefix it contains.
 
 ```json
 {
   "ok": true,
-  "local_path": "/home/jane/clio-agent/.clio/artifacts/ndp-staging/P475.CI.LY_.20.csv",
+  "local_path": "<workspace>/.clio/artifacts/ndp-staging/P475.CI.LY_.20.csv",
   "size_bytes": 50500000,
   "url": "https://ds2.datacollaboratory.org/Earthscope_api_dec2024/raw_csv/P475.CI.LY_.20.csv",
   "method": "http"
 }
 ```
 
-You then emit (note `local_path` is copied EXACTLY, including the `clio-agent`
-segment):
+You then emit (note `local_path` is the EXACT `local_path` the tool returned,
+copied verbatim with its real workspace-root prefix — never reconstructed):
 
 ```json
 {
@@ -173,7 +188,7 @@ segment):
     "acquisition": {
       "status": "staged",
       "analysis_ready": true,
-      "local_path": "/home/jane/clio-agent/.clio/artifacts/ndp-staging/P475.CI.LY_.20.csv",
+      "local_path": "<workspace>/.clio/artifacts/ndp-staging/P475.CI.LY_.20.csv",
       "source_url": "https://ds2.datacollaboratory.org/Earthscope_api_dec2024/raw_csv/P475.CI.LY_.20.csv",
       "size_bytes": 50500000,
       "required_columns": ["time", "east", "north", "up"]

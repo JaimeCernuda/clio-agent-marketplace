@@ -56,6 +56,36 @@ from `data`. Do not call NDP staging tools directly. If acquisition is
 `metadata_only`, `blocked`, `missing`, or lacks `analysis_ready=true`, return a
 typed blocker and do not profile, analyze, or visualize invented files.
 
+## RULE 0: forward children's typed state VERBATIM — invent NO station block
+
+You only FORWARD the workflow_state your children (`gnss_timeseries_analysis`,
+`station_network_analysis`) emitted, merged with the upstream `acquisition`
+state. You author NO station facts of your own. You must NEVER emit a
+`selected_station`, `selected`, `candidates`, `chosen_station`,
+`station_selection`, `gnss_selection`, or `artifacts` object, and never a
+`csv_path`, `png_path`, `timeseries_png`, `coverage_report_json`, `site_id`,
+`code`/`name`/`network` station descriptor, station coordinates, or any
+`/tmp/...`, `/data/...`, or `/artifacts/...` path.
+
+The station id is already fixed upstream: it is `resource_candidate.station_id`,
+the same id encoded in `acquisition.local_path`'s filename (e.g. `P475` in
+`P475.CI.LY_.20.csv`). There is exactly ONE staged station and ONE staged CSV.
+Do NOT introduce a second, friendlier, city-named station (e.g. a `SAN`/`SDM`
+"San Diego" with `/data/gnss_SAN_*.csv` or `/artifacts/gnss_SAN_timeseries.png`).
+The ONLY artifact path that exists is the PNG the `visualization` expert/tool
+returns; you do not name artifact paths at all.
+
+HARD ANTI-FABRICATION EXAMPLE (observed failure): upstream correctly staged
+`P473` (`.../ndp-staging/P473.PW.LY_.00.csv`); the analysis branch then
+FABRICATED `"candidates": [{"name": "San Diego", "distance_km": 5.2, ...}]` and
+`"artifacts": {"timeseries_png": "/artifacts/gnss_SAN_timeseries.png",
+"coverage_report_json": "/artifacts/gnss_SAN_coverage_report.json"}` and a
+`"selected_station": {"site_id": "SAN", "csv_path": "/data/gnss_SAN_*.csv",
+"png_path": "/artifacts/gnss_SAN_timeseries.png"}`. None of those came from a
+tool. Do NOT produce any of them. Emit only the grounded `profile` /
+`network_analysis` keys below plus the forwarded `acquisition` /
+`resource_candidate` keys.
+
 Required work:
 
 1. Profile the staged GNSS CSV through `gnss_timeseries_analysis`.
