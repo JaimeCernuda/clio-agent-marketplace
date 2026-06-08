@@ -7,8 +7,8 @@ root_expert: main
 blueprint:
   format: agent-blueprint-v1
 mcp_servers:
-  ndp: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server ndp
-  geo: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server geo
+  ndp: uv run --directory ${CLIO_KIT_PATH:-../clio-kit}/clio-kit-mcp-servers/ndp ndp-mcp
+  geo: uv run --directory ${CLIO_KIT_PATH:-../clio-kit}/clio-kit-mcp-servers/geo geo-mcp
 experts:
   - experts/main.md
   - experts/data.md

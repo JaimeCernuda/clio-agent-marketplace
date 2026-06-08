@@ -7,10 +7,10 @@ root_expert: main
 blueprint:
   format: agent-blueprint-v1
 mcp_servers:
-  ndp: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server ndp
-  geo: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server geo
-  pandas: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server pandas
-  plot: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server plot
+  ndp: uv run --directory ${CLIO_KIT_PATH:-../clio-kit}/clio-kit-mcp-servers/ndp ndp-mcp
+  geo: uv run --directory ${CLIO_KIT_PATH:-../clio-kit}/clio-kit-mcp-servers/geo geo-mcp
+  pandas: uv run --directory ${CLIO_KIT_PATH:-../clio-kit}/clio-kit-mcp-servers/pandas pandas-mcp
+  plot: uv run --directory ${CLIO_KIT_PATH:-../clio-kit}/clio-kit-mcp-servers/plot plot-mcp
 experts:
   - experts/main.md
   - experts/geospatial.md
