@@ -66,11 +66,14 @@ not an afterthought. Do NOT emit ad-hoc keys such as `staged_resource`,
 keys are invisible to the parent contract and cause the workflow to stall.
 
 Concrete tool-result-to-state mapping you MUST follow after a successful
-`ndp_stage_resource` call:
+`ndp_stage_resource` call. Copy paths byte-for-byte; never shorten, rename, or
+drop a directory segment, and never reconstruct a path from the dataset/resource
+name — the runtime verifies the file exists on disk:
 
-- the `path` field returned by `ndp_stage_resource` -> `acquisition.metadata_path`
-- the `source_url` / `selected_resource_url` returned by `ndp_stage_resource` ->
-  `acquisition.metadata_source_url`
+- the `local_path` string returned by `ndp_stage_resource` (the field may also be
+  named `path`) -> `acquisition.metadata_path`, copied verbatim
+- the `url` / `source_url` / `selected_resource_url` returned by
+  `ndp_stage_resource` -> `acquisition.metadata_source_url`
 - the dataset id you searched -> `resource_candidate.dataset_id`
 - the metadata resource name (e.g. `earthscope_converted_data.csv`) ->
   `resource_candidate.resource_name`

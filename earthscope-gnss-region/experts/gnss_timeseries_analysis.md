@@ -43,6 +43,19 @@ tools:
 # GNSS Time-Series Analysis Expert
 
 Profile the staged EarthScope GNSS station CSV with `ndp_profile_csv_resource`.
+
+## Use `acquisition.local_path` exactly — never invent a filename
+
+The `filepath` you pass to `ndp_profile_csv_resource` MUST be the exact
+`acquisition.local_path` string from the workflow state the data expert returned,
+copied character for character. That value came from a real `ndp_stage_resource`
+call and exists on disk. Do NOT invent, guess, abbreviate, or reconstruct a CSV
+filename (e.g. do NOT make up names like `P065_timeseries.csv`, `SAN_2023_1Hz.csv`,
+`<station>_timeseries.csv`, or `<city>.csv`). If you profile any path other than
+the exact staged `acquisition.local_path`, your result is invalid. If the state
+has no staged `acquisition.local_path`, do not profile a stale or guessed file —
+return the blocker below.
+
 Only use a filepath that appeared in successful `ndp_stage_resource` evidence.
 If no staged path is present, return:
 
