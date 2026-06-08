@@ -8,7 +8,7 @@ specialization: spatial_overlap
 module:
   kind: react
 tools:
-  - geospatial_points_in_polygons
+  - geo_points_in_polygons
 structured_outputs:
   workflow_state: true
   evidence: true
@@ -19,7 +19,7 @@ structured_outputs:
 Compute the spatial overlap that defines impact: which air-quality monitors lie
 within the forecast smoke footprint. Do not eyeball it — call the tool.
 
-Call `geospatial_points_in_polygons` with:
+Call `geo_points_in_polygons` with:
 - `points_geojson = "air_quality.geojson"` (the saved AirNow monitors),
 - `polygons_geojson = "smoke_forecast.geojson"` (the saved smoke polygons),
 - a small `buffer_km` (e.g. 10) so just-downwind monitors count,

@@ -21,7 +21,7 @@ parameters:
   continuation_contracts:
     - id: start_with_downwind_impact
       next_expert: downwind_impact
-      next_action: compute the smoke-monitor spatial overlap with geospatial_points_in_polygons before judging impact
+      next_action: compute the smoke-monitor spatial overlap with geo_points_in_polygons before judging impact
 ---
 
 # Impact Analysis Expert

@@ -9,7 +9,7 @@ specialization: hazard_map
 module:
   kind: react
 tools:
-  - geospatial_render_feature_map
+  - geo_render_feature_map
 structured_outputs:
   workflow_state: true
   artifacts: true
@@ -20,9 +20,9 @@ structured_outputs:
 
 Render the situational map — this case's headline deliverable. The acquisition
 step already saved each layer to a conventional GeoJSON file in the artifact
-directory. Your job is a SINGLE `geospatial_render_feature_map` call.
+directory. Your job is a SINGLE `geo_render_feature_map` call.
 
-Call `geospatial_render_feature_map` with exactly these three layers, in this
+Call `geo_render_feature_map` with exactly these three layers, in this
 order (the renderer resolves these bare filenames in the artifact directory):
 
 1. `{"name": "Smoke forecast", "geojson": "smoke_forecast.geojson",
@@ -37,7 +37,7 @@ and `bbox` = the region from `workflow_state`. Do not invent other filenames and
 do not pass inline GeoJSON blobs.
 
 Your turn is NOT complete until you have actually called
-`geospatial_render_feature_map` and it returned `status=success` with a non-empty
+`geo_render_feature_map` and it returned `status=success` with a non-empty
 file. Do not finalize after only reasoning. Return
 `workflow_state.visualization` with the artifact path. If the render tool
 errors, return that error as a typed blocker — do not claim a map exists. If a

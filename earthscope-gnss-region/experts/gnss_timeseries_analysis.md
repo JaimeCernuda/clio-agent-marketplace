@@ -16,7 +16,7 @@ signature:
       type: string
     workflow_state:
       description: >-
-        Typed profiling state. After ndp_profile_csv_resource succeeds on the
+        Typed profiling state. After pandas_profile_csv succeeds on the
         staged station CSV, set profile.status=complete and copy the staged path
         into profile.path. If no staged CSV path was available, set
         profile.status=blocked.
@@ -37,23 +37,23 @@ structured_outputs:
   artifacts: true
   errors: true
 tools:
-  - ndp_profile_csv_resource
+  - pandas_profile_csv
 ---
 
 # GNSS Time-Series Analysis Expert
 
-Profile the staged EarthScope GNSS station CSV with `ndp_profile_csv_resource`.
+Profile the staged EarthScope GNSS station CSV with `pandas_profile_csv`.
 
 ## Use `acquisition.local_path` exactly — never invent a filename
 
 Your VERY FIRST action is to find `acquisition.local_path` in the upstream
-workflow state and call `ndp_profile_csv_resource` with that exact string as
-`filepath`. Do not reason about, rename, or "tidy" the path first — locate it and
+workflow state and call `pandas_profile_csv` with that exact string as
+`data_path`. Do not reason about, rename, or "tidy" the path first — locate it and
 pass it through verbatim. It looks like
 `/home/.../.clio/artifacts/ndp-staging/P475.CI.LY_.20.csv` (a station id like
 `P475`/`P473`, a network suffix, `.csv`, under `ndp-staging/`).
 
-The `filepath` you pass MUST be the exact `acquisition.local_path` string,
+The `data_path` you pass MUST be the exact `acquisition.local_path` string,
 copied character for character. That value came from a real `ndp_stage_resource`
 call and exists on disk.
 

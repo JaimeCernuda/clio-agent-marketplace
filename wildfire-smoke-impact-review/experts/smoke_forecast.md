@@ -10,7 +10,7 @@ module:
 tools:
   - ndp_search_datasets
   - ndp_get_dataset_details
-  - ndp_query_arcgis_features
+  - geo_query_arcgis_features
 structured_outputs:
   workflow_state: true
   smoke_present: Whether smoke-forecast polygons intersect the region.

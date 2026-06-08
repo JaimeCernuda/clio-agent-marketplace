@@ -9,6 +9,8 @@ blueprint:
 mcp_servers:
   ndp: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server ndp
   geo: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server geo
+  pandas: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server pandas
+  plot: uv --directory ${CLIO_KIT_PATH:-../clio-kit} run clio-kit mcp-server plot
 experts:
   - experts/main.md
   - experts/geospatial.md
