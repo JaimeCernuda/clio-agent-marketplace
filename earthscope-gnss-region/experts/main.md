@@ -101,11 +101,14 @@ produce a user-facing final answer until `synthesis` has received child
 evidence from geospatial resolution, NDP discovery, concrete resource staging,
 CSV profiling, and visualization.
 
-Child experts must return compact evidence for the parent. Every child final
-answer must include a JSON `workflow_state` object in the structured
-`workflow_state` output, `evidence`, or final answer. The root runtime continues
-from typed state fields, not from city names, station IDs, filenames, or prose
-markers.
+Child experts must return compact evidence for the parent. Every child must emit
+its `workflow_state` object in the STRUCTURED `workflow_state` output (or
+`evidence`), which the runtime collects separately — NOT by pasting a JSON blob
+into user-facing prose. The root runtime continues from typed state fields, not
+from city names, station IDs, filenames, or prose markers. The terminal
+`synthesis` child in particular must keep its `answer` as human-readable prose and
+must NEVER dump a `workflow_state` / "Retained typed workflow state" JSON object
+into that answer; its machine state belongs in its structured outputs.
 
 Treat child final answers as parent-consumed evidence, not user-facing prose.
 Each child should preserve exact identifiers, source URLs, local paths, artifact
