@@ -49,8 +49,16 @@ NOT make up names like `P065_timeseries.csv`, `SAN_2023_1Hz.csv`,
 exact staged `acquisition.local_path` produces an invalid artifact.
 
 Only use a data_path that appeared in successful `ndp_stage_resource` evidence.
-First ensure the CSV has usable columns. Prefer `x_column="time"` and `y_columns`
-`east`, `north`, and `up` when present.
+
+**Discover the column names from the data — never guess them.** Your FIRST step
+is to call `pandas_profile_csv` on the `data_path` (or read `profile.columns` from
+the analysis expert's workflow state) to learn the EXACT column names the file
+actually has. Then pass those exact names to `plot_plot_timeseries`: the file's
+real time/timestamp column verbatim as `x_column`, and its displacement columns
+verbatim as `y_columns`. Pass ONLY names that appear in that column list — do not
+assume, abbreviate, or alter a name. A GNSS file typically exposes `time` (x) and
+`east`, `north`, `up` (y); confirm each against the profiled columns before using
+it.
 
 You MUST pass an explicit ABSOLUTE `output_path` to `plot_plot_timeseries`, and it
 MUST land under the Active workspace root (the same directory as the staged CSV).
