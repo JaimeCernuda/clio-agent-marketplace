@@ -50,8 +50,9 @@ The discovery expert already normalized the catalog into
 `/tmp/es_clean.csv`, where the `(deg)` column holds the real longitude). You rank
 stations ONLY within the geography the root `geospatial` expert resolved. Your
 FIRST tool call is `geo_filter_points_by_radius`, passing
-`data_path` = `acquisition.metadata_path` and these EXACT column args:
-`lat_column="Latitude"`, `lon_column="(deg)"`, `id_column="Site"`. Also pass the
+`data_path` = `acquisition.metadata_path`, `compact=true` (you only need the
+station id and distance to rank — `compact` keeps the result small), and these
+EXACT column args: `lat_column="Latitude"`, `lon_column="(deg)"`, `id_column="Site"`. Also pass the
 EXACT `geospatial.center_lat`, `geospatial.center_lon`, and `geospatial.radius_km`
 from typed state as `center_lat`, `center_lon`, and `radius_km`. The tool computes
 the great-circle distance from the center to every row and returns the
