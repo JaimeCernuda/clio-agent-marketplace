@@ -49,7 +49,7 @@ The discovery expert already normalized the catalog into
 `acquisition.metadata_path` (a 3-column `Site,Latitude,(deg)` CSV at
 `/tmp/es_clean.csv`, where the `(deg)` column holds the real longitude). You rank
 stations ONLY within the geography the root `geospatial` expert resolved. Your
-FIRST tool call is `geo_filter_points_by_radius` EXACTLY ONCE, passing
+FIRST tool call is `geo_filter_points_by_radius`, passing
 `data_path` = `acquisition.metadata_path` and these EXACT column args:
 `lat_column="Latitude"`, `lon_column="(deg)"`, `id_column="Site"`. Also pass the
 EXACT `geospatial.center_lat`, `geospatial.center_lon`, and `geospatial.radius_km`
@@ -145,6 +145,12 @@ This is the difference between honest no-coverage and a fabricated distant-stati
 claim.
 
 ## Your required output when there IS coverage: `station_catalog.status=ranked` + `resource_discovery.station_resource_queries`
+
+Emit `workflow_state` as a **literal JSON object** — e.g.
+`{"station_catalog": {"status": "ranked", "candidate_count": 9, "station_ids": [...]}}`.
+Write real JSON (double-quoted keys, `:` not `=`). Do NOT write it as a Python
+constructor call such as `..._workflow_state_model(station_catalog=...)`; that is
+not valid output.
 
 The parent `data` orchestrator advances to `ndp_resource_resolver` ONLY when your
 final `workflow_state` contains `station_catalog.status=ranked` (or
