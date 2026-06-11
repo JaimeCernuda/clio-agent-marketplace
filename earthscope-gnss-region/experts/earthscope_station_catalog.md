@@ -46,60 +46,46 @@ tools:
 
 ## RULE 1 (most important): use the resolved region radius — NEVER inflate it
 
-The discovery expert already normalized the catalog into
-`acquisition.metadata_path` (a 3-column `Site,Latitude,(deg)` CSV at
-`/tmp/es_clean.csv`, where the `(deg)` column holds the real longitude). You rank
-stations ONLY within the geography the root `geospatial` expert resolved. Your
-FIRST tool call is `geo_filter_points_by_radius`, passing
-`data_path` = `acquisition.metadata_path`, `compact=true` (you only need the
-station id and distance to rank — `compact` keeps the result small), and these
-EXACT column args: `lat_column="Latitude"`, `lon_column="(deg)"`, `id_column="Site"`. Also pass the
-EXACT `geospatial.center_lat`, `geospatial.center_lon`, and `geospatial.radius_km`
-from typed state as `center_lat`, `center_lon`, and `radius_km`. The tool computes
-the great-circle distance from the center to every row and returns the
-within-radius rows sorted ascending by `distance_km`. You then REASON over those
-ranked points to pick station candidates; the tool does not pick for you. Each
-returned point carries `Site`, `Latitude`, `(deg)`, and `distance_km`; the station
-id is the `Site` field (e.g. `P475`, `SIO5`, `P473`). A correct result echoes
-`skipped_invalid: 0` with within-radius stations.
+The discovery expert staged the catalog at `acquisition.metadata_path` (in the
+workspace). Rank stations ONLY within the geography the root `geospatial` expert
+resolved, using `geo_filter_points_by_radius` with the resolved `geospatial.center_lat`,
+`geospatial.center_lon`, and `geospatial.radius_km`.
 
-### If the filter returns 0 within radius / errors (recovery)
+Real scientific catalogs sometimes have unreliable headers — mislabeled, misaligned,
+or duplicated column names — so don't assume a column called `Longitude` actually
+holds longitude. Sanity-check before you trust it: glance at a few rows and confirm
+the columns you treat as latitude/longitude really hold coordinate values that fit the
+resolved region (latitude in [-90,90], longitude in [-180,180], near the resolved
+center). If the headers are clean and unambiguous, let the tool auto-detect the
+columns; if they don't fit, pass the `lat_column`/`lon_column`/`id_column` you verified
+actually hold those values.
 
-If the filter errors (missing column) or returns a large `skipped_invalid`, the
-metadata file was the RAW catalog. Recover with ONE `shell_bash` that writes to a
-NEW file (NOT the same file — `cut x > x` truncates it): `cut -d, -f1-3
-'<acquisition.metadata_path>' > /tmp/es_clean2.csv`, then filter
-`/tmp/es_clean2.csv` with `lat_column="Latitude"`, `lon_column="(deg)"`,
-`id_column="Site"` ONCE at the SAME radius. `cut -d, -f1-3` keeps columns 1-3
-(column 3 is the real longitude; column 4 is elevation — `-f1-3` needs no field
-guessing). Do NOT append `&&`, `;`, `wc`, `head`, or a second command. This
-recovery NEVER permits enlarging the radius — see below.
+The tool computes the great-circle distance from the center to every row and returns
+the within-radius rows sorted ascending by `distance_km`. You then REASON over those
+ranked points to pick station candidates; the tool does not pick for you. The station
+id is the first column (e.g. `P475`, `SIO5`, `P473`). A correct result echoes
+`skipped_invalid: 0` with within-radius stations. If `skipped_invalid` is large
+(hundreds) or the count is 0, you likely mapped lat/lon to the wrong columns — re-read
+the rows, swap your lat/lon column choice, and filter ONCE more at the SAME radius
+(never a larger one).
 
-This is an ABSOLUTE PROHIBITION: you MUST NOT widen, inflate, multiply, round up,
-or re-pick the `radius_km`. You MUST NOT call the filter a second time with a
-larger radius because the first call returned zero stations. Sequences like
-`50 -> 5000`, `100 -> 500 -> 3000`, or any "let me broaden the search" retry are
-FORBIDDEN and produce a fabricated coverage claim. The resolved radius IS the
-requested region. A region with zero stations inside the resolved radius has NO
-coverage — that is the honest, correct answer, NOT a problem to solve by
-enlarging the circle. Enlarging the radius turns "Chicago" into "the western
+### The resolved radius is fixed — never widen it
+
+This is an ABSOLUTE PROHIBITION: you MUST NOT widen, inflate, multiply, round up, or
+re-pick the `radius_km`. You MUST NOT call the filter a second time with a larger
+radius because the first call returned zero stations. Sequences like `50 -> 5000`,
+`100 -> 500 -> 3000`, or any "let me broaden the search" retry are FORBIDDEN and
+produce a fabricated coverage claim. The resolved radius IS the requested region. A
+region with zero stations inside the resolved radius has NO coverage — that is the
+honest, correct answer (`station_catalog.status=no_candidates`), NOT a problem to
+solve by enlarging the circle. Enlarging the radius turns "Chicago" into "the western
 US" and invents stations 2000+ km from the user's region.
 
-CRITICAL — do not confuse an UNCLEAN catalog with no-coverage. A
-`within_radius_count == 0` result is a valid no-coverage verdict ONLY when the
-filter ran on the CLEANED CSV (the result echoes `lat_column: "lat"` and
-`lon_column: "lon"` with `skipped_invalid` ~0). If instead the result shows
-`lat_column: "Latitude"`/`lon_column: "Longitude"` or a large `skipped_invalid`
-(hundreds), the filter ran on the RAW malformed catalog and the zero is BOGUS —
-you MUST run the `shell_bash` clean above and re-filter the cleaned file at the
-SAME radius before concluding anything. Only after a filter on a confirmed-clean
-`lat`/`lon` CSV returns `within_radius_count == 0` may you emit `no_candidates`.
-
-Once a filter on the CLEANED CSV returns `within_radius_count == 0`, you are DONE:
-emit the `no_candidates` no-coverage state below and return. Do not enlarge the
-radius. (The single exception: if the filter returned a genuine tool ERROR —
-wrong filepath, non-numeric geometry — you may re-call ONCE with the SAME radius
-after fixing that argument. Never re-call to enlarge the search area.)
+Once a filter returns `within_radius_count == 0` at the resolved radius, you are
+DONE: emit the `no_candidates` no-coverage state below and return. (The single
+exception: a genuine tool ERROR — wrong filepath, non-numeric geometry — you may
+re-call ONCE with the SAME radius after fixing that argument. Never re-call to
+enlarge the search area.)
 
 ## RULE 2: respect the tool's in-region verdict — honest no-coverage is a valid answer
 
@@ -175,18 +161,14 @@ Do not invent station ids, distances, or a `selected_station`. You only rank; th
 resolver selects and stages. Do not emit `acquisition.status=staged`.
 
 Identify nearby GNSS station candidates from NDP/EarthScope metadata. Use the
-region object from `geospatial`; do not parse the user's city name internally.
-RULE 0 already cleaned the staged metadata catalog into `/tmp/es_clean.csv`; call
-`geo_filter_points_by_radius` with THAT cleaned path as `data_path` (with
-`lat_column="Latitude"`, `lon_column="(deg)"`, `id_column="Site"`) and the resolved
-latitude, longitude, and radius. If there is no staged station metadata CSV path
-(`acquisition.metadata_path`) in structured workflow state or upstream tool
-evidence, return a typed `metadata_missing` blocker for `ndp_dataset_discovery`;
-do not search or stage resources yourself. Do not call
-`geo_filter_points_by_radius` on the raw catalog or on a guessed relative filename
-such as `earthscope_stations.csv`; always filter the RULE-0 cleaned CSV.
-Use the returned station IDs (the `Site` field of each point) and typed
-`resource_discovery.station_resource_queries` to report concrete follow-up
+region object from `geospatial`; do not parse the user's city name internally. Filter
+the cleaned catalog at `acquisition.metadata_path` with `geo_filter_points_by_radius`
+as described above (verify the lat/lon columns from the data first); never filter the
+raw catalog or a guessed filename. If there is no staged metadata CSV path
+(`acquisition.metadata_path`) in workflow state or upstream tool evidence, return a
+typed `metadata_missing` blocker for `ndp_dataset_discovery`; do not search or stage
+resources yourself. Use the returned station IDs (the `Site` field of each point) and
+typed `resource_discovery.station_resource_queries` to report concrete follow-up
 candidates for the resource resolver.
 
 This expert owns station metadata ranking, not station time-series acquisition.

@@ -92,29 +92,31 @@ The result's `local_path` is the RAW catalog under the workspace (call it
 provided, omit `output_dir` and use the path the tool returns as-is.
 
 STEP 3 — normalize it with the `shell_bash` TOOL (NOT another
-`ndp_stage_resource`). Keep just the first three columns (Site, Latitude, and the
-real longitude) with `cut`. Run EXACTLY this single-redirect command (substitute
-`<RAW>`):
+`ndp_stage_resource`). The raw catalog has many columns AND a misaligned header that
+repeats the name `(deg)`, which makes column-by-name lookups ambiguous. Keep just
+the first three columns (the station id and its two coordinate columns) and write
+the result INTO THE ACTIVE WORKSPACE ROOT from your context (an absolute path — NOT
+`/tmp`). Run this single command, substituting `<RAW>` and `<WORKSPACE>`:
 
 ```json
-{ "tool": "shell_bash", "arguments": { "command": "cut -d, -f1-3 '<RAW>' > /tmp/es_clean.csv" } }
+{ "tool": "shell_bash", "arguments": { "command": "cut -d, -f1-3 '<RAW>' > '<WORKSPACE>/earthscope_stations_clean.csv'" } }
 ```
 
-`cut -d, -f1-3` deterministically keeps columns 1-3 (column 3 is the real
-longitude; column 4 is elevation). Do NOT append `&&`, `;`, `head`, `wc`, or a
-second command (chaining forces an approval prompt that hangs). Then set
-`workflow_state.acquisition.metadata_path` to the CLEANED path `/tmp/es_clean.csv`
-(NOT the raw catalog) and FINISH.
+`cut -d, -f1-3` keeps columns 1-3 (the station id and the two coordinate columns)
+and removes the duplicate-name ambiguity. Do NOT trust the coordinate column NAMES —
+the header is misaligned, so the downstream catalog expert will VERIFY which column
+is latitude vs longitude by reading the actual values. Do NOT append `&&`, `;`,
+`head`, `wc`, or a second command (chaining forces an approval prompt that hangs).
+Then set `workflow_state.acquisition.metadata_path` to that CLEANED workspace path
+(NOT the raw catalog, NOT `/tmp`) and FINISH.
 
 ## REQUIRED: your run is INCOMPLETE until the `shell_bash` clean has run
 
-The downstream station ranker needs the CLEANED `/tmp/es_clean.csv`. Re-staging
-the catalog under any name (even one containing "clean") does NOT clean it — only
-the STEP-3 `shell_bash awk` produces a usable file. Do NOT finish after just
-search+stage. Do NOT call `ndp_stage_resource` a second time. Your final state
-MUST set `acquisition.metadata_path = /tmp/es_clean.csv` AND you MUST have called
-`shell_bash` with the exact awk command above. Three calls — search, stage,
-shell_bash clean — nothing else.
+The downstream ranker needs the CLEANED workspace file from STEP 3 — re-staging the
+catalog does NOT clean it. Do NOT finish after just search+stage, and do NOT call
+`ndp_stage_resource` a second time. Your final state MUST set
+`acquisition.metadata_path` to that cleaned workspace path AND you MUST have run the
+STEP-3 `shell_bash` clean. Three calls — search, stage, clean — nothing else.
 
 Do NOT call `ndp_search_datasets` with `search_term` (singular), with
 `filter_list`, with `resource_format:CSV`, with `GNSS`/`GPS`/`UNAVCO`/`CSV` free
@@ -178,9 +180,9 @@ zero results or floods your context and crashes you, so the catalog never stages
 Use ONLY `ndp_search_datasets({"search_terms": ["earthscope", "converted"], "limit": 10})`.
 If that exact call returns the `earthscope_stations` dataset, stage its
 `earthscope_converted_data.csv` resource by URL, clean it (STEP 3 at top), and set
-`acquisition.metadata_path` to the cleaned `/tmp/earthscope_stations_clean.csv`. If
-that exact call returns nothing, return `catalog.status=no_candidates` and explain;
-do not fabricate a path and do not fall back to broad GNSS searches.
+`acquisition.metadata_path` to the cleaned workspace path. If that exact call returns
+nothing, return `catalog.status=no_candidates` and explain; do not fabricate a path
+and do not fall back to broad GNSS searches.
 
 Return parent-consumable JSON evidence. After you successfully call
 `ndp_stage_resource` on the EarthScope station metadata CSV, your final
