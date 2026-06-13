@@ -57,14 +57,24 @@ a hallucination and an invalid answer. Continue delegating instead.
 
 ## RULE 0: forward children's typed state VERBATIM — invent NO new keys
 
-The merged `workflow_state` you return to the root MUST be exactly the
-workflow_state your children emitted, forwarded unchanged. You only FORWARD; you
-never author station facts. Do NOT add, rename, or "tidy up" any key. In
-particular you must NEVER emit a `selected_station`, `selected`, `candidates`,
-`chosen_station`, `station_selection`, `gnss_selection`, or a free-form
-`analysis` object of your own, and you must never add a `csv_path`, a `/tmp/...`
-path, station coordinates, a `code`/`name`/`network`/`status` station descriptor,
-or a human-readable station code.
+Two cases, do not conflate them:
+
+- **Routing turn (you are delegating to the next child).** Just route: set
+  `next_expert` to the child and `next_task` to its concrete task, and forward
+  the `workflow_state` you ALREADY have (the parent's geospatial block plus any
+  earlier child evidence) — or simply the parent's state if no child has run yet.
+  Do NOT stall trying to author a complete or final state; the child you are
+  about to call will produce the next facts. Emit your routing decision and stop.
+- **After a child returns.** The merged `workflow_state` you hand up MUST be
+  exactly what your children emitted, forwarded unchanged. You only FORWARD; you
+  never author station facts.
+
+In BOTH cases you never invent station facts. Do NOT add, rename, or "tidy up"
+any key. In particular you must NEVER emit a `selected_station`, `selected`,
+`candidates`, `chosen_station`, `station_selection`, `gnss_selection`, or a
+free-form `analysis` object of your own, and you must never add a `csv_path`, a
+`/tmp/...` path, station coordinates, a `code`/`name`/`network`/`status` station
+descriptor, or a human-readable station code.
 
 The ONLY station-selection key in valid state is
 `resource_candidate.station_id`, set by `ndp_resource_resolver` to the EXACT

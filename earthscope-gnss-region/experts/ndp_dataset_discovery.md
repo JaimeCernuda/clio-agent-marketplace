@@ -184,33 +184,33 @@ If that exact call returns the `earthscope_stations` dataset, stage its
 nothing, return `catalog.status=no_candidates` and explain; do not fabricate a path
 and do not fall back to broad GNSS searches.
 
-Return parent-consumable JSON evidence. After you successfully call
-`ndp_stage_resource` on the EarthScope station metadata CSV, your final
-`workflow_state` output MUST look like this (copy the tool's returned `path`
-verbatim into `acquisition.metadata_path`):
+Return parent-consumable JSON evidence. The `workflow_state` field VALUE is the
+object below — do NOT wrap it in another `"workflow_state": { ... }` key (the
+field is already named `workflow_state`; wrapping it again breaks parsing). After
+you successfully call `ndp_stage_resource` on the EarthScope station metadata CSV,
+your final `workflow_state` value MUST look like this (copy the tool's returned
+`path` verbatim into `acquisition.metadata_path`):
 
 ```json
 {
-  "workflow_state": {
-    "catalog": {
-      "status": "metadata_found",
-      "searches": [],
-      "candidate_count": 1
-    },
-    "acquisition": {
-      "status": "metadata_only",
-      "metadata_path": "/home/.../.clio/artifacts/ndp-staging/earthscope_converted_data.csv",
-      "metadata_source_url": "https://nationaldataplatform.org/.../earthscope_converted_data.csv",
-      "analysis_ready": false
-    },
-    "resource_candidate": {
-      "status": "metadata_only",
-      "dataset_id": "<dataset id>",
-      "dataset_name": "<dataset name>",
-      "resource_name": "earthscope_converted_data.csv",
-      "resource_url": "<source URL>",
-      "selection_reason": "<why this candidate matches the region>"
-    }
+  "catalog": {
+    "status": "metadata_found",
+    "searches": [],
+    "candidate_count": 1
+  },
+  "acquisition": {
+    "status": "metadata_only",
+    "metadata_path": "/home/.../.clio/artifacts/ndp-staging/earthscope_converted_data.csv",
+    "metadata_source_url": "https://nationaldataplatform.org/.../earthscope_converted_data.csv",
+    "analysis_ready": false
+  },
+  "resource_candidate": {
+    "status": "metadata_only",
+    "dataset_id": "<dataset id>",
+    "dataset_name": "<dataset name>",
+    "resource_name": "earthscope_converted_data.csv",
+    "resource_url": "<source URL>",
+    "selection_reason": "<why this candidate matches the region>"
   }
 }
 ```
@@ -239,20 +239,19 @@ this discovery stage, report it as `acquisition.status=candidate_found`,
 `analysis_ready=false`, and explain that station catalog filtering plus
 resolver staging must still establish geographic provenance.
 
-If you have not yet run the narrow catalog search, return:
+If you have not yet run the narrow catalog search, your `workflow_state` value is
+(again, the object itself — no outer `"workflow_state"` wrapper):
 
 ```json
 {
-  "workflow_state": {
-    "catalog": {
-      "status": "search_incomplete",
-      "searches": [],
-      "blocker": "narrow earthscope/converted catalog search has not been run"
-    },
-    "resource_discovery": {
-      "status": "search_required",
-      "search_terms": ["earthscope", "converted"]
-    }
+  "catalog": {
+    "status": "search_incomplete",
+    "searches": [],
+    "blocker": "narrow earthscope/converted catalog search has not been run"
+  },
+  "resource_discovery": {
+    "status": "search_required",
+    "search_terms": ["earthscope", "converted"]
   }
 }
 ```
