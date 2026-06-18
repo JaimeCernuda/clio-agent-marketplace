@@ -122,6 +122,13 @@ You are done with the data branch ONLY when state contains
 typed blocker (`metadata_only` / `blocked` / `missing`). Never short-circuit the
 chain by emitting a staged acquisition yourself.
 
+If the request asked for SEVERAL stations and the resolver staged fewer than asked
+because some ranked candidates had no downloadable time-series, you are NOT done — go
+BACK to `earthscope_station_catalog` and ask it (a new task) for MORE ranked candidates
+beyond the ones already tried, then route to `ndp_resource_resolver` again to stage the
+additional ones. Repeat until the requested number is staged or the in-region list is
+genuinely exhausted (then report how many were available — never invent a station).
+
 Required child order:
 
 1. `ndp_dataset_discovery`: search NDP using the resolved region provided by

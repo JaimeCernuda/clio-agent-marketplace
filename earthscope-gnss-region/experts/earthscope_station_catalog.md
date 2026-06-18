@@ -190,7 +190,11 @@ Do not invent station ids, distances, or a `selected_station`. You only rank; th
 resolver selects and stages. Do not emit `acquisition.status=staged`.
 
 Identify nearby GNSS station candidates from NDP/EarthScope metadata. Use the
-region object from `geospatial`; do not parse the user's city name internally. Filter
+resolved region's `center_lat`/`center_lon`/`radius_km` — from `geospatial` when it
+ran, or the explicit coordinates and radius the user supplied directly (in your task)
+when `geospatial` was skipped because coordinates were already given. Do not geocode a
+bare city name yourself (that is `geospatial`'s job); but explicit coordinates in the
+request are ready to use. Filter
 the cleaned catalog at `acquisition.metadata_path` with `geo_filter_points_by_radius`
 as described above (verify the lat/lon columns from the data first); never filter the
 raw catalog or a guessed filename. If there is no staged metadata CSV path
