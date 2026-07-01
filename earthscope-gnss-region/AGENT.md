@@ -1,6 +1,7 @@
 ---
 id: earthscope-gnss-region
-title: EarthScope GNSS Region Agent
+title: EarthScope
+display_name: EarthScope
 version: 0.1.0
 description: Resolves a requested geography, discovers NDP EarthScope GNSS resources, profiles station CSV time series, and produces evidence-backed artifacts.
 root_expert: main

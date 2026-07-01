@@ -1,6 +1,7 @@
 ---
 id: wildfire-smoke-impact-review
-title: Wildfire Smoke Impact Review Agent
+title: NIFC
+display_name: NIFC
 version: 0.1.0
 description: Finds an active wildfire impacting people downwind by fusing live fire perimeters, smoke forecast, and air-quality data, and renders a situational map.
 root_expert: main
